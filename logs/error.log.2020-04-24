@@ -1,0 +1,129 @@
+[2020-04-24 16:31:44.979] [main] ERROR o.s.boot.SpringApplication : Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'serverDiscover': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'zookeeper.register.address' in value "${zookeeper.register.address}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:405)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1422)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:882)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at com.kone.nettycombat.NettyClientApplication.main(NettyClientApplication.java:12)
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'zookeeper.register.address' in value "${zookeeper.register.address}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:178)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:124)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:236)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:175)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:909)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1231)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1210)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:640)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:130)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	... 17 common frames omitted
+[2020-04-24 16:35:24.205] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 16:36:47.374] [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+[2020-04-24 16:39:05.494] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 16:40:02.719] [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8077 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8077 or configure this application to listen on another port.
+
+[2020-04-24 16:40:49.606] [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8077 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8077 or configure this application to listen on another port.
+
+[2020-04-24 16:41:04.510] [ZkClient-EventThread-25-120.79.128.43] ERROR c.k.n.core.netty.ChanelManager : e:
+io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: /192.168.3.27:8077
+	at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717)
+	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:225)
+	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:291)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:634)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:581)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:460)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.net.ConnectException: Connection refused: no further information
+	... 11 common frames omitted
+[2020-04-24 16:41:09.022] [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8077 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8077 or configure this application to listen on another port.
+
+[2020-04-24 16:41:18.505] [ZkClient-EventThread-25-120.79.128.43] ERROR c.k.n.core.netty.ChanelManager : e:
+io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: no further information: /192.168.3.27:8077
+	at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717)
+	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:225)
+	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:291)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:634)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:581)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:498)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:460)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$2.run(SingleThreadEventExecutor.java:131)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: java.net.ConnectException: Connection refused: no further information
+	... 11 common frames omitted
+[2020-04-24 16:41:29.493] [ZkClient-EventThread-25-120.79.128.43] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 16:49:59.486] [ZkClient-EventThread-25-120.79.128.43] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 17:04:32.543] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 17:05:38.330] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 17:07:14.479] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 17:10:00.188] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 17:14:21.952] [main] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!
+[2020-04-24 17:37:03.451] [ZkClient-EventThread-26-120.79.128.43] ERROR c.k.n.core.netty.ChanelManager : have no useable server list!!!

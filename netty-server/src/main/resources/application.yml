@@ -1,0 +1,23 @@
+
+server:
+  port: 8080
+  servlet:
+    context-path: /netty_server
+
+
+# 本服务暴露netty服务地址
+rpc:
+  server:
+    address: 192.168.3.27:8077
+
+# 通过zk维护netty地址
+zookeeper:
+  register:
+    address: 120.79.128.43
+    root_dir: /rpc
+
+
+logging:
+  config: classpath:logback.xml
+  file:
+    path: /log
