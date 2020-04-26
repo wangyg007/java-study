@@ -33,7 +33,7 @@ public class NettyServiceHander extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        log.info("client disconnect:"+ctx.channel().remoteAddress());;
+        log.info("client disconnect:"+ctx.channel().remoteAddress());
     }
 
     @Override
@@ -43,17 +43,16 @@ public class NettyServiceHander extends ChannelInboundHandlerAdapter {
             log.info("client:"+ctx.channel().remoteAddress()+" heartbeat msg");
         }else {
             log.info("client request:"+JSON.toJSONString(msg));
-//            Response response = new Response();
-//            response.setRequestId(request.getId());
-//            try {
-//                Object res = this.handler(request);
-//                response.setData(res);
-//            } catch (Throwable throwable) {
-//                throwable.printStackTrace();
-//                response.setCode(1);
-//                response.setError_msg(throwable.toString());
-//            }
-//            ctx.writeAndFlush(response);
+            Response response = new Response();
+            response.setRequestId(request.getId());
+            try {
+                response.setData("success");
+            } catch (Throwable throwable) {
+                log.error("",throwable);
+                response.setCode(1);
+                response.setError_msg(throwable.toString());
+            }
+            ctx.writeAndFlush(response);
         }
     }
 

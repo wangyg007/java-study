@@ -67,13 +67,15 @@ public class NettyClient implements InitializingBean {
                     });
 
             String[] split = clientAddr.split(":");
-            if (split.length==2){
-                String host=split[0];
-                int port=Integer.parseInt(split[1]);
-                bootstrap.bind(host,port).sync();
-                log.info("client start success,bind:"+port);
+            String host=split[0];
+            int port=Integer.parseInt(split[1]);
 
+            //阻塞等待结果
+            ChannelFuture channelFuture = bootstrap.bind(host, port).sync();
+            if (channelFuture.isSuccess()){
+                log.info("client success bind:{}",clientAddr);
             }
+
         }catch (Exception e){
             log.error("client start error:{}",e);
         }

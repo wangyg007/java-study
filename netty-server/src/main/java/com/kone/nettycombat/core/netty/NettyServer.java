@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +58,7 @@ public class NettyServer implements ApplicationContextAware, InitializingBean {
 
             for (Class<?> inter:interfaces){
                 String interName = inter.getName();
-                log.info((String.format("加载服务类: %s",interName)));
+                log.info((String.format("load service class: %s",interName)));
                 serviceMap.put(interName,bean);
             }
         }
@@ -89,11 +90,31 @@ public class NettyServer implements ApplicationContextAware, InitializingBean {
                String ip=ipPort[0];
                int port=Integer.parseInt(ipPort[1]);
 
+               //阻塞等待结果
                ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
-               log.info("server start success,bind:"+port);
+               if (channelFuture.isSuccess()){
+                   log.info("server start success,bind:"+serverAddress);
+               }
                serverRegister.register(serverAddress);
 
-               channelFuture.channel().closeFuture().sync();
+               /**
+                在这里面future.channel().closeFuture().sync();这个语句的主要目的是，方便测试，方便写一个非springboot的demo,
+                比如一个简单地junit test方法，closeFuture().sync()可以阻止junit test将server关闭，
+                同时停止test应用的时候也不需要手动再调用关闭服务器的方法workerGroup.shutdownGracefully()...。这样设计在测试时省心。
+
+                但是，当将nettyserver联系到springboot应用的启动时，例如nettyserver设置为@Component,当springboot扫描到nettyserver时，
+                springboot主线程执行到nettyserver的postconstruct注解的方法，然后发生了future.channel().closeFuture().sync();
+                这样导致springboot主线程阻塞，无法继续加载剩下的bean,
+                更糟糕的是，如果springboot还添加了springboot-web的依赖（自带tomcat容器），
+                那么被阻塞后将无法启动tomcat servlet engine和webapplicationcontext.
+
+                所以不能简单地在nettyserver中的构造方法/init方法中写future.channel().closeFuture().sync();和workerGroup.shutdownGracefully().
+                只需在构造方法/init方法中bootstrap.bind(port),这是异步的，不会阻塞springboot主线程。而将stop方法单独抽取出来。
+
+                需要注意的是，即使直接关闭springboot应用，不手动调用上面的stop方法，nettyserver也会将之前绑定的端口解除，
+                为了保险起见，可以将stop方法添加@predestroy注解
+                */
+               //channelFuture.channel().closeFuture().sync();
            }catch (Exception e){
                 e.printStackTrace();
                 bossGroup.shutdownGracefully();

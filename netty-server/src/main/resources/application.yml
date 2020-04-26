@@ -4,16 +4,15 @@ server:
   servlet:
     context-path: /netty_server
 
-
-# 本服务暴露netty服务地址
+# 鏈満netty鏈嶅姟鍦板潃
 rpc:
   server:
     address: 192.168.3.27:8077
 
-# 通过zk维护netty地址
+# zk鍦板潃
 zookeeper:
   register:
-    address: localhost
+    address: 120.79.128.43
     root_dir: /rpc
 
 
