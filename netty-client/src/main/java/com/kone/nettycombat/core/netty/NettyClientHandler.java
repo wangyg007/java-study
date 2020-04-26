@@ -9,13 +9,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 
 /**
@@ -34,7 +34,6 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     ChanelManager chanelManager;
 
-    private Map<String, SynchronousQueue<Object>> queMap = new ConcurrentHashMap<>();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -60,8 +59,6 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
 
         Response response = JSON.parseObject(msg.toString(), Response.class);
         String requestId = response.getRequestId();
-        SynchronousQueue<Object> queue = queMap.get(requestId);
-        queue.put(response);
 
     }
 
@@ -71,11 +68,23 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
      * @param channel
      * @return
      */
-    public SynchronousQueue<Object> sendReq(Request request, Channel channel) {
-        SynchronousQueue<Object> queue = new SynchronousQueue<>();
-        queMap.put(request.getId(), queue);
-        channel.writeAndFlush(request);
-        return queue;
+    public void sendReq(Request request, Channel channel) {
+
+        channel.writeAndFlush(request).addListener(
+                new GenericFutureListener<Future<? super Void>>() {
+                    @Override
+                    public void operationComplete(Future<? super Void> future) throws Exception {
+                        if (future.isSuccess()){
+                            log.info("response success:{}",future.get());
+                        }else {
+                            Response response = new Response();
+                            response.setCode(1);
+                            response.setError_msg(null==future.get()?"no response from sever":future.get().toString());
+                            log.info("response success:{}",future.get());
+                        }
+                    }
+                }
+        );
     }
 
     @Override

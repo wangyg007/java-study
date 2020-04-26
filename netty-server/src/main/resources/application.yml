@@ -13,7 +13,7 @@ rpc:
 # 通过zk维护netty地址
 zookeeper:
   register:
-    address: 120.79.128.43
+    address: localhost
     root_dir: /rpc
 
 

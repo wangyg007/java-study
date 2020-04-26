@@ -7,9 +7,12 @@ server:
 # 通过zk维护netty地址
 zookeeper:
   register:
-    address: 120.79.128.43
+    address: localhost
     root_dir: /rpc
 
+rpc:
+  client:
+    address: localhost:8071
 
 # spring-boot-starter-parent自带各种logging依赖，只需指定logback配置和日志路径即可
 logging:

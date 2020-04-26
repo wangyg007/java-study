@@ -39,7 +39,8 @@ public class TestSendMsg {
                     request.setMethodName("test");
                     request.setClassName("class");
 
-                    log.info("server res:{}",nettyClient.send(request));
+                    nettyClient.send(request);
+
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
                     log.error("e:",e);
