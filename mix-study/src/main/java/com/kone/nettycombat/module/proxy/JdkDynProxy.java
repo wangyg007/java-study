@@ -1,4 +1,4 @@
-package com.kone.nettycombat.main;
+package com.kone.nettycombat.module.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

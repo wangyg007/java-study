@@ -1,4 +1,4 @@
-package com.kone.nettycombat.main;
+package com.kone.nettycombat.module.proxy;
 
 /**
  * @author wangyg
