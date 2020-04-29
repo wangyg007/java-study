@@ -9,6 +9,7 @@ package com.kone.nettycombat.module.ssh;
 
 import ch.ethz.ssh2.*;
 import com.kone.nettycombat.common.utils.IdUtil;
+import com.kone.nettycombat.module.ssh.entity.ExeRes;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
@@ -75,7 +76,9 @@ public class RemoteShellExecutor implements InitializingBean {
      * @return
      * @throws Exception
      */
-    public int exec2(String cmds) throws Exception {
+    public ExeRes exec2(String cmds) throws Exception {
+        ExeRes exeRes = new ExeRes();
+        StringBuilder stringBuilder = new StringBuilder();
         InputStream stdOut = null;
         InputStream stdErr = null;
         Session session=null;
@@ -101,27 +104,31 @@ public class RemoteShellExecutor implements InitializingBean {
                 out.println("exit");
                 // 6. 关闭输入流
                 out.close();
-                // 7. 等待，除非1.连接关闭；2.输出数据传送完毕；3.进程状态为退出；4.超时
-
+                
                 log.info("Here is the output from stdout:");
+                stringBuilder.append("Here is the output from stdout:");
                 while (true)
                 {
                     String line = stdoutReader.readLine();
                     if (line == null) { break; }
                     log.info(line);
+                    stringBuilder.append(line);
                 }
                 log.info("Here is the output from stderr:");
+                stringBuilder.append("Here is the output from stderr:");
                 while (true) {
                     String line = stderrReader.readLine();
                     if (line == null) { break; }
                     log.info(line);
+                    stringBuilder.append(line);
                 }
-                /* Show exit status, if available (otherwise "null") */
 
+                // 7. 等待，除非1.连接关闭；2.输出数据传送完毕；3.进程状态为退出；4.超时
                 session.waitForCondition(ChannelCondition.CLOSED | ChannelCondition.EOF | ChannelCondition.EXIT_STATUS , 30000);
 
                 log.info("ExitCode: " + session.getExitStatus());
                 ret = session.getExitStatus();
+                exeRes.setCode(ret);
 
             } else {
                 throw new Exception("登录远程机器失败" + ip); // 自定义异常类 实现略
@@ -131,7 +138,8 @@ public class RemoteShellExecutor implements InitializingBean {
             if (null!=stdErr){stdErr.close();}
             if (null!=session){session.close();}
         }
-        return ret;
+        exeRes.setResStr(stringBuilder.toString());
+        return exeRes;
     }
 
     /**
@@ -196,15 +204,13 @@ public class RemoteShellExecutor implements InitializingBean {
                throw new RuntimeException("登陆远程主机失败");
            }
         }catch (Exception e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }finally {
             if (null!=scpOutputStream){
                 scpOutputStream.close();
             }
             if (null!=sCPClient){sCPClient=null;}
         }
-
-        return null;
 
     }
 

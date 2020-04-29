@@ -1,6 +1,7 @@
 package com.kone.nettycombat.module.ssh.controller;
 
 import com.kone.nettycombat.module.ssh.RemoteShellExecutor;
+import com.kone.nettycombat.module.ssh.entity.ExeRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -33,20 +34,18 @@ public class RemoteShellController {
     @ApiOperation("datax远程调用")
     @PostMapping("remoteExecute")
     //@ApiImplicitParam(name="json",value = "json配置",paramType = "query",required = true,dataType = "String")
-    public String remoteExecuteDatax(@RequestBody String dto){
-        int code;
+    public ExeRes remoteExecuteDatax(@RequestBody String dto){
+        ExeRes res=null;
         try {
             String file = remoteShellExecutor.transferFile2(dto, BASE_SHELL_DIR);
             if (!StringUtils.isEmpty(file)){
                 log.info("file create sucess:"+file);
-                code = remoteShellExecutor.exec2(BIN + BASE_SHELL_DIR+file);
-                if (code==0){return "success";}
+                res = remoteShellExecutor.exec2(BIN + BASE_SHELL_DIR+file);
             }
-
         } catch (Exception e) {
             log.error("remoteExecute e:",e);
         }
-        return "failed";
+        return res;
     }
 
 }
