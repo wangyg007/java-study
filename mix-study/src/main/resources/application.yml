@@ -2,7 +2,9 @@
 server:
   port: 8080
   servlet:
-    context-path: /netty_server
+    context-path: /mix
+
+
 
 # 本机netty服务地址
 rpc:

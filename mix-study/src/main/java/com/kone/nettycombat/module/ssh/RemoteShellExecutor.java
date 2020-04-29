@@ -5,12 +5,14 @@ package com.kone.nettycombat.module.ssh;
  * @time 2020/4/29 10:35
  * @note
  **/
+
+import ch.ethz.ssh2.*;
+import com.kone.nettycombat.common.utils.IdUtil;
+import org.apache.commons.io.IOUtils;
+
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
-import ch.ethz.ssh2.*;
-import org.apache.commons.io.IOUtils;
 
 public class RemoteShellExecutor {
 
@@ -30,6 +32,7 @@ public class RemoteShellExecutor {
         this.osUsername = usr;
         this.password = pasword;
     }
+
 
 
     /**
@@ -208,6 +211,39 @@ public class RemoteShellExecutor {
         scpOutputStream.close();
     }
 
+    public String transferFile2(String content, String remoteTargetDirectory) throws Exception {
+
+        String filename=IdUtil.getId()+".json";
+        SCPOutputStream scpOutputStream=null;
+
+        try {
+//            exec2("mkdir -p " + remoteTargetDirectory);
+//
+           if (this.login()){
+               SCPClient sCPClient = conn.createSCPClient();
+               scpOutputStream = sCPClient.put(filename, content.getBytes().length, remoteTargetDirectory, "0600");
+
+               scpOutputStream.write(content.getBytes());
+               scpOutputStream.flush();
+               return filename;
+           }else {
+               throw new RuntimeException("登陆远程主机失败");
+           }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if (null!=scpOutputStream){
+                scpOutputStream.close();
+            }
+            if (null!=conn){
+                conn.close();
+            }
+        }
+
+        return null;
+
+    }
+
     /**
      * 传输整个目录
      *
@@ -242,7 +278,8 @@ public class RemoteShellExecutor {
         RemoteShellExecutor executor = new RemoteShellExecutor("192.168.140.128", "root", "0000");
         // 执行myTest.sh 参数为java Know dummy
         ///usr/bin/python2.7 /usr/local/datax/bin/datax.py /usr/local/datax/script/file_2_file.json
-        String command="/usr/bin/python2.7 /usr/local/datax/bin/datax.py /usr/local/datax/script/file_2_file.json";
-        System.out.println(executor.exec2(command));
+//        String command="/usr/bin/python2.7 /usr/local/datax/bin/datax.py /usr/local/datax/script/file_2_file.json";
+//        System.out.println(executor.exec2(command));
+        executor.transferFile2("123","/usr/local/datax/script");
     }
 }
