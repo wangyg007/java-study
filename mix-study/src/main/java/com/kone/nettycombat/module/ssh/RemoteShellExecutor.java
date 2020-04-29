@@ -4,11 +4,13 @@ package com.kone.nettycombat.module.ssh;
  * @author wangyg
  * @time 2020/4/29 10:35
  * @note
+ * @ref https://www.jianshu.com/p/513c72dfee1b
  **/
 
 import ch.ethz.ssh2.*;
 import com.kone.nettycombat.common.utils.IdUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -66,33 +68,6 @@ public class RemoteShellExecutor implements InitializingBean {
     }
 
 
-
-    private String processStream(InputStream in, String charset) throws Exception {
-        byte[] buf = new byte[1024];
-        StringBuilder sb = new StringBuilder();
-        while (in.read(buf) != -1) {
-            sb.append(new String(buf, charset));
-        }
-        return sb.toString();
-    }
-
-    private String processStdErr(InputStream in, String charset)
-            throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, charset));
-        StringBuffer sb = new StringBuffer();
-        if (in.available() != 0) {
-            while (true) {
-                String line = br.readLine();
-                if (line == null)
-                {
-                    break;
-                }
-                sb.append(line).append(System.getProperty("line.separator"));
-            }
-        }
-        return sb.toString();
-    }
-
     /**
      * 升级版 执行脚本
      *
@@ -103,12 +78,13 @@ public class RemoteShellExecutor implements InitializingBean {
     public int exec2(String cmds) throws Exception {
         InputStream stdOut = null;
         InputStream stdErr = null;
+        Session session=null;
         String outStr = "";
         String outErr = "";
         int ret = -1;
         try {
             if (login()) {
-                Session session = conn.openSession();
+                session = conn.openSession();
                 // 建立虚拟终端
                 session.requestPTY("bash");
                 // 打开一个Shell
@@ -146,20 +122,58 @@ public class RemoteShellExecutor implements InitializingBean {
 
                 log.info("ExitCode: " + session.getExitStatus());
                 ret = session.getExitStatus();
-                session.close();/* Close this session */
+
             } else {
                 throw new Exception("登录远程机器失败" + ip); // 自定义异常类 实现略
             }
         }finally {
             if (null!=stdOut){stdOut.close();}
             if (null!=stdErr){stdErr.close();}
+            if (null!=session){session.close();}
         }
         return ret;
     }
 
+    /**
+     * 根据文件名 远程传输单个文件
+     * @param fileName
+     * @param remoteTargetDirectory
+     * @return
+     * @throws Exception
+     */
+    public void transferFile1(String fileName, String remoteTargetDirectory) throws Exception {
+
+        File file=null;
+        SCPOutputStream scpOutputStream=null;
+        SCPClient sCPClient=null;
+        try {
+            if (this.login()){
+                file = new File(fileName);
+                sCPClient = conn.createSCPClient();
+                scpOutputStream = sCPClient.put(file.getName(), file.length(), remoteTargetDirectory, "0600");
+
+                String content = IOUtils.toString(new FileInputStream(file), charset);
+
+                scpOutputStream.write(content.getBytes());
+                scpOutputStream.flush();
+
+            }else {
+                throw new RuntimeException("登陆远程主机失败");
+            }
+        }catch (Exception e){
+           throw new Exception(e);
+        }finally {
+            if (null!=scpOutputStream){
+                scpOutputStream.close();
+            }
+            if (null!=sCPClient){sCPClient=null;}
+            if (null!=file){file=null;}
+        }
+
+    }
 
     /**
-     * 升级版 远程传输单个文件
+     * 升级版 根据string内容远程传输单个文件
      * @param content
      * @param remoteTargetDirectory
      * @return
@@ -169,10 +183,10 @@ public class RemoteShellExecutor implements InitializingBean {
 
         String filename=IdUtil.getId()+".json";
         SCPOutputStream scpOutputStream=null;
-
+        SCPClient sCPClient=null;
         try {
            if (this.login()){
-               SCPClient sCPClient = conn.createSCPClient();
+               sCPClient = conn.createSCPClient();
                scpOutputStream = sCPClient.put(filename, content.getBytes().length, remoteTargetDirectory, "0600");
 
                scpOutputStream.write(content.getBytes());
@@ -187,6 +201,7 @@ public class RemoteShellExecutor implements InitializingBean {
             if (null!=scpOutputStream){
                 scpOutputStream.close();
             }
+            if (null!=sCPClient){sCPClient=null;}
         }
 
         return null;
@@ -217,7 +232,7 @@ public class RemoteShellExecutor implements InitializingBean {
                 exec2("mkdir -p " + remoteTargetDirectory + "/" + file);
                 transferDirectory(fullName, rdir);
             } else {
-                transferFile2(fullName, remoteTargetDirectory);
+                transferFile1(fullName, remoteTargetDirectory);
             }
         }
 
