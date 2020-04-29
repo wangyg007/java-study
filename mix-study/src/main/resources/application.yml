@@ -22,3 +22,9 @@ logging:
   config: classpath:logback.xml
   file:
     path: /log
+
+remote:
+  ssh:
+    ip: 192.168.140.128
+    username: root
+    password: "0000"

@@ -13,7 +13,7 @@ import lombok.Data;
 @ApiModel("datax json 请求体")
 public class DataxDto {
 
-    @ApiModelProperty(value = "json",required = true)
+    @ApiModelProperty(value = "json配置",required = true)
     private String json;
 
 }

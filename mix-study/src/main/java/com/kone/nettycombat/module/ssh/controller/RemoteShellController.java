@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RemoteShellController {
 
 
-    RemoteShellExecutor remoteShellExecutor=new RemoteShellExecutor("192.168.140.128","root","0000");;
+    @Autowired
+    RemoteShellExecutor remoteShellExecutor;
 
     private static final String BASE_SHELL_DIR="/usr/local/datax/script/";
 
@@ -33,7 +34,6 @@ public class RemoteShellController {
     @PostMapping("remoteExecute")
     //@ApiImplicitParam(name="json",value = "json配置",paramType = "query",required = true,dataType = "String")
     public String remoteExecuteDatax(@RequestBody String dto){
-        //dto.setJson(dto.getJson().replace("\n","").replace("\r",""));
         int code;
         try {
             String file = remoteShellExecutor.transferFile2(dto, BASE_SHELL_DIR);
