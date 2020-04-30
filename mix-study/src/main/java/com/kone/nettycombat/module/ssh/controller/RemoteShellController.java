@@ -5,12 +5,12 @@ import com.kone.nettycombat.module.ssh.entity.ExeRes;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author wangyg
@@ -42,6 +42,21 @@ public class RemoteShellController {
                 log.info("file create sucess:"+file);
                 res = remoteShellExecutor.exec2(BIN + BASE_SHELL_DIR+file);
             }
+        } catch (Exception e) {
+            log.error("remoteExecute e:",e);
+        }
+        return res;
+    }
+
+    @ApiOperation("发送单个文件")
+    @PostMapping("sendFile")
+    //@ApiImplicitParam(name="json",value = "json配置",paramType = "query",required = true,dataType = "String")
+    public ExeRes sendFile(@RequestParam("file") MultipartFile file,@RequestParam("remotePath") String path){
+        ExeRes res=new ExeRes();
+        try {
+            String content = IOUtils.toString(file.getInputStream(), Charsets.UTF_8);
+            res.setResStr(remoteShellExecutor.transferFile2(content,path));
+
         } catch (Exception e) {
             log.error("remoteExecute e:",e);
         }

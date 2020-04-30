@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Component
@@ -42,6 +44,8 @@ public class RemoteShellExecutor implements InitializingBean {
         log.info("private RemoteShellExecutor construct...");
     }
 
+    private Lock loginLock=new ReentrantLock(true);
+
     /**
      * 配置加载完毕后登陆
      * @throws Exception
@@ -56,15 +60,22 @@ public class RemoteShellExecutor implements InitializingBean {
      * @return
      * @throws IOException
      */
-    private synchronized boolean login() throws IOException {
+    private Boolean login() throws IOException {
+        loginLock.lock();
+        try {
+            if (null==conn){
+                conn = new Connection(ip);
+                conn.connect();
+                return conn.authenticateWithPassword(osUsername, password);
+            }else {
+                return true;
+            }
 
-       if (null==conn){
-           conn = new Connection(ip);
-           conn.connect();
-           return conn.authenticateWithPassword(osUsername, password);
-       }else {
-           return true;
-       }
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }finally {
+            loginLock.unlock();
+        }
 
     }
 
@@ -104,7 +115,7 @@ public class RemoteShellExecutor implements InitializingBean {
                 out.println("exit");
                 // 6. 关闭输入流
                 out.close();
-                
+
                 log.info("Here is the output from stdout:");
                 stringBuilder.append("Here is the output from stdout:");
                 while (true)
