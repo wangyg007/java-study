@@ -59,6 +59,8 @@ public class RemoteShellController {
 
         } catch (Exception e) {
             log.error("remoteExecute e:",e);
+            res.setCode(1);
+            res.setResStr(e.getMessage());
         }
         return res;
     }

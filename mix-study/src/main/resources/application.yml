@@ -4,6 +4,11 @@ server:
   servlet:
     context-path: /mix
 
+spring:
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
 
 
 # 本机netty服务地址
@@ -28,3 +33,4 @@ remote:
     ip: 192.168.140.128
     username: root
     password: "0000"
+
