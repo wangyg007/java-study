@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @note
  **/
 @RestController
-@Api(description = "datax远程调用")
+@Api(tags = "datax远程调用")
 @RequestMapping("/datax")
 @Slf4j
 public class RemoteShellController {
