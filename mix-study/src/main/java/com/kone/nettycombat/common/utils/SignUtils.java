@@ -102,18 +102,18 @@ public class SignUtils {
 
 
     public static void main( String[] args ) {
-        String appId="10031";
-        String appSercert="9d682649d9f64faeb5e4477a8e27858e";
+        String appId="10018";
+        String appSercert="af7ab2033a994dc8b40a4dbd8f6208ab";
         String param="{\n" +
-                "    \"appId\":\"10031\",\n" +
+                "    \"appId\":\"%s\",\n" +
                 "    \"key\":\"%s\",\n" +
                 "    \"serviceCode\":\"getParkingLotList\",\n" +
                 "    \"ts\":\"%s\",\n" +
                 "    \"reqId\":\"%s\",\n" +
-                "    \"pageIndex\":{\"id\":1},\n" +
+                "    \"pageIndex\":1,\n" +
                 "    \"pageSize\":10\n" +
                 "}";
-        param=String.format(param,"%s", System.currentTimeMillis(), IdUtil.getId());
+        param=String.format(param,appId,"%s", System.currentTimeMillis(), IdUtil.getId());
         // System.out.println(param);
         JSONObject jsonObject = JSON.parseObject(param);
 
